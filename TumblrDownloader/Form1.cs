@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using System.Net;
 using HtmlAgilityPack;
@@ -21,6 +21,8 @@ namespace TumblrDownloader
             
         }
         TumblrDocParse tumDP;
+        public delegate void Myinvoke(string str);
+
         private void work(object obj, DoWorkEventArgs e)
         {
             MessageBox.Show(e.ToString());
@@ -30,7 +32,7 @@ namespace TumblrDownloader
         {
             
             tumDP = new TumblrDocParse(proxyAddr.Text, proxyPort.Text, 10000);
-            tumDP.ParseOnePost += UpdateStatusLable;
+          
             //  BackgroundWorker bw = new BackgroundWorker();
             //  bw.DoWork +=new DoWorkEventHandler(work);
             //  bw.RunWorkerAsync(blogName.Text);
@@ -129,19 +131,20 @@ namespace TumblrDownloader
 
         
 
-        public void UpdateStatusLable(Object o,EventArgs e)
+        public void UpdateStatusLable(Object o, EventArgs e)
         {
-            MessageBox.Show("");
-          
 
-                label5.Text = "哇塞成功了";
+
+            TumblrParseEventArgs ex = (TumblrParseEventArgs)e;
+           // MessageBox.Show(ex.TumblrPostURL);
+                label5.Text = ex.TumblrPostURL;
                 label5.Update();
            
 
 
         }
 
-
+        
 
         
             
@@ -150,7 +153,14 @@ namespace TumblrDownloader
         
         private void button2_Click(object sender, EventArgs e)
         {
-          //  Clipboard.SetDataObject(checkedListBox1.SelectedItem.ToString());
+            //  Clipboard.SetDataObject(checkedListBox1.SelectedItem.ToString());
+           
+            tumDP = new TumblrDocParse(proxyAddr.Text, proxyPort.Text, 10000);
+            tumDP.SetTumblrBlogName(blogName.Text);
+            tumDP.ParseOnePost += UpdateStatusLable;
+            Thread t = new Thread(tumDP.RunTumbleAnalysis);
+            t.Start();
+            
         }
 
         private void button4_Click(object sender, EventArgs e)
