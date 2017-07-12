@@ -18,10 +18,12 @@ namespace TumblrDownloader
         public Form1()
         {
             InitializeComponent();
-            
+            tumDP = new TumblrDocParse();
+            tumDP.ParseOnePost += UpdateStatusLable;
+
         }
         TumblrDocParse tumDP;
-        public delegate void Myinvoke(string str);
+        public delegate void Myinvoke(EventArgs str);
 
         private void work(object obj, DoWorkEventArgs e)
         {
@@ -133,17 +135,49 @@ namespace TumblrDownloader
 
         public void UpdateStatusLable(Object o, EventArgs e)
         {
+            Myinvoke m = new Myinvoke(Method);
 
+            if(label5.InvokeRequired)
+            {
+               
+                // MessageBox.Show(ex.TumblrPostURL);
+                label5.Invoke(m,new object[] {e});
+               
 
-            TumblrParseEventArgs ex = (TumblrParseEventArgs)e;
-           // MessageBox.Show(ex.TumblrPostURL);
-                label5.Text = ex.TumblrPostURL;
-                label5.Update();
+            }
+            
            
 
 
         }
+        private void Method(EventArgs e)
+        {
+            TumblrParseEventArgs ex = (TumblrParseEventArgs)e;
+            //  MessageBox.Show(ex.TumblrPostURL);
+            ListViewItem lvi = new ListViewItem(listView1.Items.Count.ToString());
+          //  MessageBox.Show(listView1.Items.Count.ToString());
+            listView1.Columns[0].Name = "tumPostIndex";
+            listView1.Columns[1].Name = "tumPostID";
+            listView1.Columns[2].Name = "tumPostURL";
+            listView1.Columns[3].Name = "tumResCnt";
+            listView1.Columns[4].Name = "parseErrors";
+          //  lvi.SubItems.Add(listView1.Items.Count.ToString());
+            lvi.SubItems.Add("未完成");
+            lvi.SubItems.Add(ex.TumblrPostURL);
+            lvi.SubItems.Add("未完成");
+            lvi.SubItems.Add("未完成");
 
+            listView1.Columns["tumPostIndex"].Text = "序号";
+            listView1.Columns["tumPostID"].Text = "PostID";
+            listView1.Columns["tumPostURL"].Text ="PostURL";
+            listView1.Columns["tumResCnt"].Text ="资源数量" ;
+            listView1.Columns["parseErrors"].Text ="错误";
+           
+            listView1.Items.Add(lvi);
+            // label5.Text = ex.TumblrPostURL;
+            // label5.Update();
+            listView1.Update();
+        }
         
 
         
@@ -154,10 +188,10 @@ namespace TumblrDownloader
         private void button2_Click(object sender, EventArgs e)
         {
             //  Clipboard.SetDataObject(checkedListBox1.SelectedItem.ToString());
-           
-            tumDP = new TumblrDocParse(proxyAddr.Text, proxyPort.Text, 10000);
-            tumDP.SetTumblrBlogName(blogName.Text);
-            tumDP.ParseOnePost += UpdateStatusLable;
+
+            // tumDP = new TumblrDocParse(proxyAddr.Text, proxyPort.Text, 10000);
+            tumDP.SetProxyParas(proxyAddr.Text, proxyPort.Text, 10000);
+            tumDP.SetTumblrBlogName(blogName.Text);          
             Thread t = new Thread(tumDP.RunTumbleAnalysis);
             t.Start();
             
@@ -226,6 +260,11 @@ namespace TumblrDownloader
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
