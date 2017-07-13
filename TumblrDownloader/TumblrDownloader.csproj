@@ -133,11 +133,13 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourcesDownloader.cs" />
     <Compile Include="TDownProxy.cs" />
     <Compile Include="C:\Users\hasee\Desktop\TumblrDocParse.cs">
       <Link>TumblrDocParse.cs</Link>
     </Compile>
     <Compile Include="TumblrParseEventArgs.cs" />
+    <Compile Include="TumblrResource.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

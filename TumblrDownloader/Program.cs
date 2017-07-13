@@ -15,6 +15,7 @@ namespace TumblrDownloader
         public static string PageCodeCacheFolder = "D:\\tumblr\\";
         public static string DBFilePath = "default";
         public static string DBFileName = "TumblrImgs.db3";
+        public static string TumblrResourcesFolder = "D:\\TumblrResources\\";
         [STAThread]
         static void Main()
         {

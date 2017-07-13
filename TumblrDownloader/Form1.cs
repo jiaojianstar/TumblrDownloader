@@ -268,5 +268,19 @@ namespace TumblrDownloader
         {
 
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            TumblrResource testTR = new TumblrResource("0",
+                "tumblr_os2l26I3K41u9kfh3.mp4",
+                "video",
+                "https://shemale-pix.tumblr.com/video_file/t:v_6sfXcAiYNbWXOwuo94tA/162623592228/tumblr_os2l26I3K41u9kfh3",
+                "UN");
+            ResourcesDownloader testRDL = new ResourcesDownloader(proxyAddr.Text, proxyPort.Text, 10000);
+            testRDL.SetDownloadResources(new TumblrResource[] { testTR });
+            testRDL.StartDownLoad();
+
+
+        }
     }
 }
