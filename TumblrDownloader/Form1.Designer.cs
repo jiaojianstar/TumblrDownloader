@@ -52,6 +52,8 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cb_ThreadCnt = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -128,6 +130,7 @@
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataGridView1.Location = new System.Drawing.Point(0, 401);
@@ -218,19 +221,45 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(1175, 333);
+            this.button5.Location = new System.Drawing.Point(1108, 309);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.Size = new System.Drawing.Size(142, 66);
             this.button5.TabIndex = 20;
             this.button5.Text = "开始下载";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(810, 347);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(82, 15);
+            this.label7.TabIndex = 22;
+            this.label7.Text = "下载线程数";
+            // 
+            // cb_ThreadCnt
+            // 
+            this.cb_ThreadCnt.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_ThreadCnt.FormattingEnabled = true;
+            this.cb_ThreadCnt.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"});
+            this.cb_ThreadCnt.Location = new System.Drawing.Point(913, 344);
+            this.cb_ThreadCnt.Name = "cb_ThreadCnt";
+            this.cb_ThreadCnt.Size = new System.Drawing.Size(80, 23);
+            this.cb_ThreadCnt.TabIndex = 23;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1292, 636);
+            this.Controls.Add(this.cb_ThreadCnt);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.listBox1);
@@ -283,6 +312,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cb_ThreadCnt;
     }
 }
 

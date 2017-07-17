@@ -9,5 +9,8 @@ namespace TumblrDownloader
     class TumblrParseEventArgs:EventArgs
     {
         public string  TumblrPostURL="";
+        public string TumResourceSize = "";
+
+
     }
 }

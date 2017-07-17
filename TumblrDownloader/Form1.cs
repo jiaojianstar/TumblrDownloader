@@ -192,9 +192,25 @@ namespace TumblrDownloader
             // tumDP = new TumblrDocParse(proxyAddr.Text, proxyPort.Text, 10000);
             tumDP.SetProxyParas(proxyAddr.Text, proxyPort.Text, 10000);
             tumDP.SetTumblrBlogName(blogName.Text);          
-            Thread t = new Thread(tumDP.RunTumbleAnalysis);
+            Thread t = new Thread(tumDP.RunTumblrAnalysis);
             t.Start();
-            
+            dataGridView1.DataSource = tumDP.GetImgDownTable();
+            dataGridView1.Columns["tumImgIndex"].HeaderText = "序号";
+            dataGridView1.Columns["tumImgIndex"].Width = 75;
+            dataGridView1.Columns["tumResType"].HeaderText = "类型";
+            dataGridView1.Columns["tumResType"].Width = 75;
+            dataGridView1.Columns["tumImgName"].HeaderText = "文件名";
+            dataGridView1.Columns["tumResourceURL"].HeaderText = "资源URL";
+            dataGridView1.Columns["tumResourceURL"].Width = 700;
+            dataGridView1.Columns["tumImgSize"].HeaderText = "大小";
+            dataGridView1.Columns["tumImgPostName"].HeaderText = "Post名称";
+            dataGridView1.Columns["tumImgPostDate"].HeaderText = "Post日期";
+            dataGridView1.Columns["tumImgPostID"].HeaderText = "PostID";
+            dataGridView1.Columns["tumNumbericPostID"].HeaderText = "纯数字PostID";
+            dataGridView1.Columns["tumImgHash"].HeaderText = "哈希";
+            dataGridView1.Columns["tumImgDownStatus"].HeaderText = "状态";
+            dataGridView1.Columns["tumImgDownTime"].HeaderText = "下载完成时间";
+            dataGridView1.Update();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -271,16 +287,74 @@ namespace TumblrDownloader
 
         private void button5_Click(object sender, EventArgs e)
         {
-            TumblrResource testTR = new TumblrResource("0",
+            int cntOfEveryThread = 0;
+            int tmp_resCNT = dataGridView1.RowCount;
+            List<TumblrResource> trList = new List<TumblrResource>();
+            string tmp_resIndex, tmp_resURL, tmp_resName, tmp_resType = "";
+          
+            if (cb_ThreadCnt.SelectedIndex!=-1)
+            {
+              //  MessageBox.Show(cb_ThreadCnt.SelectedItem.ToString());
+                int threadCNT = int.Parse(cb_ThreadCnt.SelectedItem.ToString());
+                /*
+                TumblrResource testTR = new TumblrResource("0",
                 "tumblr_os2l26I3K41u9kfh3.mp4",
                 "video",
                 "https://shemale-pix.tumblr.com/video_file/t:v_6sfXcAiYNbWXOwuo94tA/162623592228/tumblr_os2l26I3K41u9kfh3",
                 "UN");
-            ResourcesDownloader testRDL = new ResourcesDownloader(proxyAddr.Text, proxyPort.Text, 10000);
-            testRDL.SetDownloadResources(new TumblrResource[] { testTR });
-            testRDL.StartDownLoad();
+                */
+               
+                double tmpCNT =(double)tmp_resCNT / threadCNT;
+                cntOfEveryThread =(int) Math.Ceiling(tmpCNT);
+                for (int i = 0; i < threadCNT; i++)
+                {
+                    for (int j = i*cntOfEveryThread; j <(i+1)*cntOfEveryThread; j++)
+                    {
+                        if (j < tmp_resCNT)
+                        {
+                            tmp_resIndex = dataGridView1.Rows[j].Cells["tumImgIndex"].Value.ToString();
+                            tmp_resName = dataGridView1.Rows[j].Cells["tumImgName"].Value.ToString();
+                            tmp_resType= dataGridView1.Rows[j].Cells["tumResType"].Value.ToString();
+                            tmp_resURL= dataGridView1.Rows[j].Cells["tumResourceURL"].Value.ToString();
+                            trList.Add(new TumblrResource(tmp_resIndex, tmp_resName, tmp_resType,tmp_resURL, "UN"));
+
+                        } else
+                        {
+                            break;
+                        }
+
+                        
+
+                    }
+                    //启动下载线程，传入list
+                    MessageBox.Show(trList.Count().ToString());
+                    //清空下载资源列表，准备下一次分割
+                    trList.Clear();
 
 
+                }
+
+                //trList.Add(testTR);
+                //trList.Add(new TumblrResource())
+                /*
+                ResourcesDownloader testRDL = new ResourcesDownloader(proxyAddr.Text, proxyPort.Text, 10000);
+                testRDL.SetDownloadResources(trList);
+                testRDL.StartDownLoad();
+                */
+            }
+            else
+            {
+                MessageBox.Show("请选择下载线程数");
+            }
+            
+            
+
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(cb_ThreadCnt.SelectedValue.ToString());
         }
     }
 }

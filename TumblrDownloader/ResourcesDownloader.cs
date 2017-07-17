@@ -10,7 +10,8 @@ namespace TumblrDownloader
 {
     class ResourcesDownloader
     {
-        private TumblrResource[] ToDownRes = null;
+        //private TumblrResource[] ToDownRes = null;
+        private List<TumblrResource> ToDownRes = null;
         private TDownProxy tumDownProxy = null;
         private bool SaveResourcesToFolderWithPostName = false;
 
@@ -36,6 +37,7 @@ namespace TumblrDownloader
         {
             if (ToDownRes.Count<TumblrResource>() > 0)
             {
+                
                 foreach (TumblrResource tr in ToDownRes)
                 {
                     String tumResFilePath = Program.TumblrResourcesFolder + tr.ResourceName;
@@ -108,7 +110,7 @@ namespace TumblrDownloader
             }
 
         }
-        public void SetDownloadResources(TumblrResource[] tdr)
+        public void SetDownloadResources(List<TumblrResource> tdr)
         {
             ToDownRes = tdr;
 
