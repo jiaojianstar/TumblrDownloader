@@ -14,22 +14,45 @@ namespace TumblrDownloader
 {
     public partial class Form1 : Form
     {
-        
+        TumblrDocParse tumDP;
+        ResourcesDownloader resDL;
+        public delegate void Myinvoke(EventArgs str);
+
         public Form1()
         {
             InitializeComponent();
             tumDP = new TumblrDocParse();
-            tumDP.ParseOnePost += UpdateStatusLable;
+            resDL = new ResourcesDownloader();
+            tumDP.OnOnePostParsed += new EventHandler<TumblrEventArgs>( tumDP_OnePostParsed);
+            resDL.OnOneResourceDownloaded += new EventHandler<TumblrEventArgs>(UpdateResDGV);
 
         }
-        TumblrDocParse tumDP;
-        public delegate void Myinvoke(EventArgs str);
-
-        private void work(object obj, DoWorkEventArgs e)
+        private void UpdateResDGV(Object o, EventArgs e)
         {
-            MessageBox.Show(e.ToString());
-            tumDP.ArchiveToPosts(100);
+            Myinvoke m = new Myinvoke(UpdateDGVMethod);
+
+            if (this.InvokeRequired)
+            {
+
+                // MessageBox.Show(ex.TumblrPostURL);
+                this.Invoke(m, e);
+
+
+            }
+
+
+
         }
+        private void UpdateDGVMethod(EventArgs e)
+        {
+            //查找传入的资源编号，更新显示
+            TumblrEventArgs ex = (TumblrEventArgs)e;
+            MessageBox.Show(ex.TumblrResourceIndex + " / " + ex.TumblrResourceTime);
+
+        }
+       
+
+       
         private void button1_Click(object sender, EventArgs e)
         {
             
@@ -133,15 +156,15 @@ namespace TumblrDownloader
 
         
 
-        public void UpdateStatusLable(Object o, EventArgs e)
+        public void tumDP_OnePostParsed(Object o, EventArgs e)
         {
-            Myinvoke m = new Myinvoke(Method);
+            Myinvoke m = new Myinvoke(UpdatePostListMethod);
 
-            if(label5.InvokeRequired)
+            if(this.InvokeRequired)
             {
                
                 // MessageBox.Show(ex.TumblrPostURL);
-                label5.Invoke(m,new object[] {e});
+               this.Invoke(m,e);
                
 
             }
@@ -150,9 +173,9 @@ namespace TumblrDownloader
 
 
         }
-        private void Method(EventArgs e)
+        private void UpdatePostListMethod(EventArgs e)
         {
-            TumblrParseEventArgs ex = (TumblrParseEventArgs)e;
+            TumblrEventArgs ex = (TumblrEventArgs)e;
             //  MessageBox.Show(ex.TumblrPostURL);
             ListViewItem lvi = new ListViewItem(listView1.Items.Count.ToString());
           //  MessageBox.Show(listView1.Items.Count.ToString());
@@ -289,7 +312,7 @@ namespace TumblrDownloader
         {
             int cntOfEveryThread = 0;
             int tmp_resCNT = dataGridView1.RowCount;
-            List<TumblrResource> trList = new List<TumblrResource>();
+          
             string tmp_resIndex, tmp_resURL, tmp_resName, tmp_resType = "";
           
             if (cb_ThreadCnt.SelectedIndex!=-1)
@@ -308,6 +331,8 @@ namespace TumblrDownloader
                 cntOfEveryThread =(int) Math.Ceiling(tmpCNT);
                 for (int i = 0; i < threadCNT; i++)
                 {
+                    List<TumblrResource> trList = new List<TumblrResource>();
+                    
                     for (int j = i*cntOfEveryThread; j <(i+1)*cntOfEveryThread; j++)
                     {
                         if (j < tmp_resCNT)
@@ -327,9 +352,13 @@ namespace TumblrDownloader
 
                     }
                     //启动下载线程，传入list
-                    MessageBox.Show(trList.Count().ToString());
-                    //清空下载资源列表，准备下一次分割
-                    trList.Clear();
+                    MessageBox.Show(trList.Count.ToString());
+                    resDL = new ResourcesDownloader();
+                    resDL.SetDownloadResources(trList);
+                    Thread thr = new Thread(resDL.StartDownLoad);
+                    thr.Start();
+                    //MessageBox.Show(trList.Count().ToString());
+                  
 
 
                 }
@@ -354,7 +383,12 @@ namespace TumblrDownloader
 
         private void button6_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(cb_ThreadCnt.SelectedValue.ToString());
+            DBOperator dbo = new DBOperator();
+            DataTable dt = dbo.GetTestData();
+            MessageBox.Show(dt.Rows.Count.ToString());
+            dataGridView1.DataSource = dt;
         }
+
+       
     }
 }

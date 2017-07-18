@@ -138,7 +138,7 @@
     <Compile Include="C:\Users\hasee\Desktop\TumblrDocParse.cs">
       <Link>TumblrDocParse.cs</Link>
     </Compile>
-    <Compile Include="TumblrParseEventArgs.cs" />
+    <Compile Include="TumblrEventArgs.cs" />
     <Compile Include="TumblrResource.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

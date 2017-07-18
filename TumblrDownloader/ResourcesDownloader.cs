@@ -14,11 +14,20 @@ namespace TumblrDownloader
         private List<TumblrResource> ToDownRes = null;
         private TDownProxy tumDownProxy = null;
         private bool SaveResourcesToFolderWithPostName = false;
-
+        private string TumblrResourceSize ="";
         private HttpWebRequest TumDownReq = null;
         private HttpWebResponse TumDownRes = null;
         private Stream tumStream = null;
-       
+        public event EventHandler<TumblrEventArgs> OnOneResourceDownloaded;
+        private DBOperator dbo = null;
+        private void CallOneResourceDownloadedEvent(TumblrEventArgs e)
+        {
+            if (OnOneResourceDownloaded != null)
+            {            
+
+                OnOneResourceDownloaded.Invoke(this, e);
+            }
+        }
         public ResourcesDownloader()
         {
 
@@ -27,6 +36,8 @@ namespace TumblrDownloader
         {
             tumDownProxy = new TDownProxy(pAddr, port, tOut);
             DirectoryInfo tumDI = new DirectoryInfo(Program.TumblrResourcesFolder);
+            dbo = new DBOperator();
+           
             if (!tumDI.Exists)
             {
                 tumDI.Create();
@@ -35,6 +46,7 @@ namespace TumblrDownloader
         }
         public void StartDownLoad()
         {
+            Console.WriteLine("当前待下载资源数量是：" + ToDownRes.Count);
             if (ToDownRes.Count<TumblrResource>() > 0)
             {
                 
@@ -51,12 +63,23 @@ namespace TumblrDownloader
                             {
                                 TumDownReq = tumDownProxy.GetHttpWebRequest(tr.ResourceURL);
                                 TumDownRes = (HttpWebResponse)TumDownReq.GetResponse();
-                                byte[] imageBuffer = new byte[10240];
+                                byte[] imageBuffer = new byte[Program.TumblrResourceBufferSize];
                                 if (TumDownRes.StatusCode == HttpStatusCode.OK)
                                 {
 
                                     tumStream = TumDownRes.GetResponseStream();
-                                    Console.WriteLine("资源长度： "+TumDownRes.ContentLength);
+                                    int tumResSize_KB =(int)Math.Round( (double)TumDownRes.ContentLength / 1024,0);
+                                    double tumResSize_MB = Math.Round((double)TumDownRes.ContentLength / 1024 / 1024, 2);
+                                    if (tumResSize_KB < 10240)
+                                    {
+                                        TumblrResourceSize = tumResSize_KB + " KB";
+
+                                    }
+                                    else {
+                                        TumblrResourceSize = tumResSize_MB + " MB";
+                                    }
+                                  
+                                    Console.WriteLine("资源长度： "+ TumblrResourceSize);
                                     int readSize = tumStream.Read(imageBuffer, 0, imageBuffer.Length);
                                     int filelenth = 0;
                                     FileStream tumFS  = new FileStream(tumResFilePath, FileMode.Create);
@@ -70,9 +93,16 @@ namespace TumblrDownloader
 
                                    
                                     tumFS.Close();
+                                    tumStream.Close();
+                                    TumblrEventArgs tea = new TumblrEventArgs();
 
 
-
+                                    dbo.UpdateTumblrResourceItem(tr.ResourceIndex, this.TumblrResourceSize, DateTime.Now.ToString());
+                                    tea.TumblrResourceDownloadStatus = "DN";
+                                    tea.TumblrResourceIndex = tr.ResourceIndex;
+                                    tea.TumblrResourceSize = this.TumblrResourceSize;
+                                    tea.TumblrResourceTime = DateTime.Now.ToString();
+                                    CallOneResourceDownloadedEvent(tea);
                                 }
                             }
                             catch (Exception e)
@@ -82,8 +112,9 @@ namespace TumblrDownloader
                             finally
                             {
 
+                                
                                
-                                tumStream.Close();
+                               
                                 TumDownRes.Close();
                                 TumDownReq.Abort();
                             }

@@ -54,6 +54,7 @@
             this.button5 = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.cb_ThreadCnt = new System.Windows.Forms.ComboBox();
+            this.button6 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -253,11 +254,22 @@
             this.cb_ThreadCnt.Size = new System.Drawing.Size(80, 23);
             this.cb_ThreadCnt.TabIndex = 23;
             // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(395, 314);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(123, 57);
+            this.button6.TabIndex = 24;
+            this.button6.Text = "装载测试数据";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1292, 636);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.cb_ThreadCnt);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.button5);
@@ -314,6 +326,7 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cb_ThreadCnt;
+        private System.Windows.Forms.Button button6;
     }
 }
 

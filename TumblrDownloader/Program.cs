@@ -16,6 +16,7 @@ namespace TumblrDownloader
         public static string DBFilePath = "default";
         public static string DBFileName = "TumblrImgs.db3";
         public static string TumblrResourcesFolder = "D:\\TumblrResources\\";
+        public static int TumblrResourceBufferSize = 10240;
         [STAThread]
         static void Main()
         {
