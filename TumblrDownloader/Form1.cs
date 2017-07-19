@@ -22,23 +22,27 @@ namespace TumblrDownloader
         {
             InitializeComponent();
             tumDP = new TumblrDocParse();
-            resDL = new ResourcesDownloader();
+            
             tumDP.OnOnePostParsed += new EventHandler<TumblrEventArgs>( tumDP_OnePostParsed);
-            resDL.OnOneResourceDownloaded += new EventHandler<TumblrEventArgs>(UpdateResDGV);
+            
 
         }
         private void UpdateResDGV(Object o, EventArgs e)
         {
             Myinvoke m = new Myinvoke(UpdateDGVMethod);
-
-            if (this.InvokeRequired)
+            lock(this)
             {
+                if (this.InvokeRequired)
+                {
 
-                // MessageBox.Show(ex.TumblrPostURL);
-                this.Invoke(m, e);
+                    // MessageBox.Show(ex.TumblrPostURL);
+                    this.Invoke(m, e);
 
+
+                }
 
             }
+           
 
 
 
@@ -47,7 +51,10 @@ namespace TumblrDownloader
         {
             //查找传入的资源编号，更新显示
             TumblrEventArgs ex = (TumblrEventArgs)e;
-            MessageBox.Show(ex.TumblrResourceIndex + " / " + ex.TumblrResourceTime);
+           
+            toolStripStatusLabel1.Text = ex.TumblrResourceIndex + "下载完成!";
+            statusStrip1.Update();
+           // MessageBox.Show(ex.TumblrResourceIndex + " / " + ex.TumblrResourceTime);
 
         }
        
@@ -352,13 +359,15 @@ namespace TumblrDownloader
 
                     }
                     //启动下载线程，传入list
-                    MessageBox.Show(trList.Count.ToString());
-                    resDL = new ResourcesDownloader();
+                //    MessageBox.Show(trList.Count.ToString());
+                    resDL = new ResourcesDownloader(proxyAddr.Text, proxyPort.Text, 10000);
                     resDL.SetDownloadResources(trList);
+                    resDL.OnOneResourceDownloaded += new EventHandler<TumblrEventArgs>(UpdateResDGV);
                     Thread thr = new Thread(resDL.StartDownLoad);
+                    thr.Name = "Thread" + i;
                     thr.Start();
                     //MessageBox.Show(trList.Count().ToString());
-                  
+                   // trList.Clear();
 
 
                 }

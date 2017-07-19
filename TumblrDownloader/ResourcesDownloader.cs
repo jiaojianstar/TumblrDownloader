@@ -46,7 +46,7 @@ namespace TumblrDownloader
         }
         public void StartDownLoad()
         {
-            Console.WriteLine("当前待下载资源数量是：" + ToDownRes.Count);
+            Console.WriteLine(System.Threading.Thread.CurrentThread.Name+"线程待下载资源数量是：" + ToDownRes.Count);
             if (ToDownRes.Count<TumblrResource>() > 0)
             {
                 
@@ -54,6 +54,7 @@ namespace TumblrDownloader
                 {
                     String tumResFilePath = Program.TumblrResourcesFolder + tr.ResourceName;
                     FileInfo tumResFileInfo = new FileInfo(tumResFilePath);
+                    long tumContentLength = 0;
                     if (!tumResFileInfo.Exists)
                     {
 
@@ -68,36 +69,38 @@ namespace TumblrDownloader
                                 {
 
                                     tumStream = TumDownRes.GetResponseStream();
-                                    int tumResSize_KB =(int)Math.Round( (double)TumDownRes.ContentLength / 1024,0);
-                                    double tumResSize_MB = Math.Round((double)TumDownRes.ContentLength / 1024 / 1024, 2);
+                                    tumContentLength = TumDownRes.ContentLength;
+                                    int tumResSize_KB = (int)Math.Round((double)tumContentLength / 1024, 0);
+                                    double tumResSize_MB = Math.Round((double)tumContentLength / 1024 / 1024, 2);
                                     if (tumResSize_KB < 10240)
                                     {
                                         TumblrResourceSize = tumResSize_KB + " KB";
 
                                     }
-                                    else {
+                                    else
+                                    {
                                         TumblrResourceSize = tumResSize_MB + " MB";
                                     }
-                                  
-                                    Console.WriteLine("资源长度： "+ TumblrResourceSize);
+
+                                    Console.WriteLine("编号为"+tr.ResourceIndex +"资源长度： " + TumblrResourceSize);
                                     int readSize = tumStream.Read(imageBuffer, 0, imageBuffer.Length);
                                     int filelenth = 0;
-                                    FileStream tumFS  = new FileStream(tumResFilePath, FileMode.Create);
+                                    FileStream tumFS = new FileStream(tumResFilePath, FileMode.Create);
                                     while (readSize > 0)
                                     {
                                         tumFS.Write(imageBuffer, 0, readSize);
                                         filelenth = filelenth + readSize;
                                         readSize = tumStream.Read(imageBuffer, 0, imageBuffer.Length);
-                                        Console.WriteLine("已写入长度： "+tumFS.Length);
+                                        Console.WriteLine(System.Threading.Thread.CurrentThread.Name + "已写入长度： " + tumFS.Length);
                                     }
 
-                                   
+
                                     tumFS.Close();
                                     tumStream.Close();
                                     TumblrEventArgs tea = new TumblrEventArgs();
 
 
-                                    dbo.UpdateTumblrResourceItem(tr.ResourceIndex, this.TumblrResourceSize, DateTime.Now.ToString());
+                                    dbo.UpdateTumblrResourceItem(tr.ResourceIndex, tumContentLength.ToString(), DateTime.Now.ToString());
                                     tea.TumblrResourceDownloadStatus = "DN";
                                     tea.TumblrResourceIndex = tr.ResourceIndex;
                                     tea.TumblrResourceSize = this.TumblrResourceSize;
@@ -105,18 +108,28 @@ namespace TumblrDownloader
                                     CallOneResourceDownloadedEvent(tea);
                                 }
                             }
-                            catch (Exception e)
+                            catch (IOException e)
                             {
-
+                                Console.WriteLine(System.Threading.Thread.CurrentThread.Name + "下载："+ tr.ResourceIndex + "，发生IO异常:" + e.Message);
+                            }
+                            catch (WebException e)
+                            {
+                                Console.WriteLine(System.Threading.Thread.CurrentThread.Name + "下载：" + tr.ResourceIndex + "，发生NET异常:" + e.Message);
                             }
                             finally
                             {
 
-                                
-                               
-                               
-                                TumDownRes.Close();
-                                TumDownReq.Abort();
+
+
+                                if (TumDownRes != null)
+                                {
+                                    TumDownRes.Close();
+                                }
+                                if (TumDownReq != null)
+                                {
+                                    TumDownReq.Abort();
+                                }
+
                             }
 
                         }

@@ -71,6 +71,7 @@ namespace TumblrDownloader
         {
             sLite3CMD.CommandText = "update TumblrImgsDetails SET tumImgSize='"+resSize
                 +"',tumImgDownTime='"+resDNTime
+                + "',tumImgDownStatus='DN"
                 + "' WHERE tumImgIndex='"+resIndex
                 +"' ";
             try
